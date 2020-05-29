@@ -6,12 +6,19 @@ import random
 # TODO : Values for pieces
 # TODO : min/max tree
 
-def compRandMove(board):
+
+def compRandMove(board, notationFile):
     #make random move from list of legal moves
     move = random.choice(list(board.legal_moves))
+    if(board.turn is chess.WHITE):
+        outString = board.san(move) + "\t"
+    else:
+        outString = board.san(move) + "\n"
+    notationFile.write(outString)
     board.push_uci(str(move))
     
-def getMove(board):
+    
+def getMove(board, notationFile):
 
      #Get player move and validate
     notValid = True
@@ -30,11 +37,20 @@ def getMove(board):
             print("Not a valid move!")
             sanMove = input("Enter move: ")
 
+    if(board.turn is chess.WHITE):
+        outString = sanMove + "\t"
+    else:
+        outString = sanMove + "\n"
+    notationFile.write(outString)
     return uciMove
 
 def newGame():
    
     board = chess.Board()
+
+    notationFile = open("notation.txt", "w+")
+    notationFile.write("Wite\tBlack\n-------------\n");
+    
 
     #Prompt for color
     choice = input("W for White, B for Black:")
@@ -43,14 +59,17 @@ def newGame():
 
     #If black, computer makes first move
     if choice is "B":
-        compRandMove(board)
-    print(board)
+        compRandMove(board, notationFile)
+        
+        
+    print()
+    print(board, "\n")
     #Continue moves until game ends
     while not board.is_game_over():
         
         #Move player and computer
-        board.push_uci(str(getMove(board)))
-        compRandMove(board)
+        board.push_uci(str(getMove(board, notationFile)))
+        compRandMove(board, notationFile)
         print(board, "\n")
 
     #Display reason for end of game

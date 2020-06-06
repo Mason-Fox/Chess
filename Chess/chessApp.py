@@ -1,5 +1,7 @@
 import chess
 import AIMoves as ai
+import Tree
+import ChessMove
 
 #File contains main logic and input/output for player
 # TODO : min/max tree

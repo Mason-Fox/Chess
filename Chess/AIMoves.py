@@ -7,8 +7,8 @@ import random
 #board = current state of board
 #returns san move of move added to the board
 def min_max_move(board):
-    print()
     #TODO
+    print()
 
 #Chooses a random move from legal moves of highest value gain and executes move
 #board = current state of board

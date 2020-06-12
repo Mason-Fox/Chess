@@ -1,4 +1,5 @@
 import chess
+import copy
 
 #File contains inheritence of chess.Move class to add method
 
@@ -14,6 +15,7 @@ class Value_Move(chess.Move):
     #self = potential move made onto board
     #returns value of move
     def move_val(self, board):
+        val = 0
         #determine if white or black move
         if (board.turn is chess.WHITE):
             colorVal = 1
@@ -22,21 +24,38 @@ class Value_Move(chess.Move):
 
         #if pawn promotion, recieve points based on what promoted to 
         if(self.promotion is chess.QUEEN):
-            return 9 * colorVal
+            val += 9
         elif(self.promotion is chess.ROOK):
-            return 5 * colorVal
+            val += 5
         elif(self.promotion is chess.BISHOP or self.promotion is chess.KNIGHT):
-            return 3 * colorVal
-       
-        #If blank square, no value gained or lost, else gain points based on what piece is taken
+            val += 3
+
+        #If a piece is taken, recieve points based on value of pirce
         pieceTaken = board.piece_at(self.to_square)
-        if(pieceTaken is None):
-            return 0
-        elif(pieceTaken.piece_type is chess.QUEEN):
-            return 9 * colorVal
-        elif(pieceTaken.piece_type is chess.ROOK):
-            return 5 * colorVal
-        elif(pieceTaken.piece_type is chess.BISHOP or pieceTaken.piece_type is chess.KNIGHT):
-            return 3 * colorVal
-        elif(pieceTaken.piece_type is chess.PAWN):
-            return 1 * colorVal
+        if (pieceTaken is not None):
+            if(pieceTaken.piece_type is chess.QUEEN):
+                val += 9
+            elif(pieceTaken.piece_type is chess.ROOK):
+                val += 5
+            elif(pieceTaken.piece_type is chess.BISHOP or pieceTaken.piece_type is chess.KNIGHT):
+                val += 3
+            elif(pieceTaken.piece_type is chess.PAWN):
+                val += 1
+
+        #if move results in checkmate, add highest value to move
+        newBoard = copy.copy(board)
+        newBoard.push_uci(str(self))
+        if(newBoard.is_checkmate()):
+            val += 100000
+        elif(newBoard.is_game_over()):
+            #If result is stalemate and in winning possition, lose value
+            ####TODO : Calc winning
+            print()
+        #Add points for castling to prioritize over another random move
+        if(board.is_castling(self)):
+            val += 0.5
+        elif (board.piece_at(self.from_square).piece_type is chess.KING):
+        #Priotoitize any other random move over king
+            val -= 0.25
+            
+        return val * colorVal

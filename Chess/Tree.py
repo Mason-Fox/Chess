@@ -19,31 +19,113 @@ class LinkedList():
             self.head = node
         self.size += 1
 
-    #print all values stored in nodes in list  
-    def print_list(self):
+    #returns highest val of any nodes in list
+    def max(self):
         temp = self.head
+        high = temp.val
         while temp is not None:
-            print(temp.value())
+            if temp.val > high:
+                high = temp.val
+            temp = temp.next_node
+        return high
+
+    #returns highest val of any nodes in list
+    def min(self):
+        temp = self.head
+        low = temp.val
+        while temp is not None:
+            if temp.val < low:
+                low = temp.val
+            temp = temp.next_node
+        return low
+
+    #retuns list holding all moves in list tied at max value
+    def max_val_moves(self):
+        temp = self.head
+        moves = list()
+        moves.append(temp.next_move)
+        high = -100000
+        while temp is not None:
+            if(temp.val > high):
+                high = temp.val
+                moves.clear()
+                moves.append(temp.next_move)
+            elif(temp.val is high):
+                moves.append(temp.next_move)
             temp = temp.next_node
         
+        return moves
+
+    #retuns list holding all moves in list tied at min value
+    def min_val_moves(self):
+        temp = self.head
+        moves = list()
+        moves.append(temp.next_move)
+        low = 100000
+        while temp is not None:
+            if(temp.val < low):
+                low = temp.val
+                moves.clear()
+                moves.append(temp.next_move)
+            elif(temp.val is low):
+                moves.append(temp.next_move)
+            temp = temp.next_node
+
+        return moves
+
+    #print all values stored in nodes in list 
+    def print_list(self):
+        
+        temp = self.head
+        high = temp.val
+        while temp is not None:
+            if temp.val > high:
+                high = temp.val
+            
+            temp = temp.next_node
+        print(high)
+        
 class Node():
-    def __init__(self, board, next_move, parent_node, prev_node = None, next_node = None):
+    def __init__(self, board, next_move, parent_node, depth = None, max_depth = None, prev_node = None, next_node = None):
+        
         self.board = board
         self.parent_node = parent_node
         self.next_move = next_move
         self.next_node = next_node
-        self.prev_node = prev_node
         self.children = LinkedList()
-        self.val = self.value()
-    
-    def value(self):
-        #If the node is meant to have value (not head or root)
+        self.val = self.value(depth, max_depth)
+
+    #Calculates the value of a node based on net gain or loss of given move and parent moves
+    def value(self, depth, max_depth):
+        #If the node is meant to have value (not head or root), do not calc
         if(self.next_move is not None):
-            return self.next_move.move_val(self.board)
+            val = ChessMove.Value_Move(self.next_move).move_val(self.board)
+            #If at max depth, calculate net value of parents rather than static value
+            if(depth == max_depth):
+                temp = self
+                while temp.parent_node.parent_node is not None:
+                    temp = temp.parent_node
+                    val += temp.val
+            #update board after move to pass to children
+            tempBoard = copy.copy(self.board)
+            tempBoard.push_uci(str(self.next_move))
+            self.board = tempBoard
+            '''
+            temp = self
+            outString = str(temp.next_move) + " " + str(val)
+            while temp.parent_node.parent_node is not None:
+                temp = temp.parent_node
+                outString += " " + str(temp.next_move) + " " + str(temp.val)
+            #loop back through and print move and val of everything above
+            if(val is not 0):
+                print(outString)
+            '''
+            return val
+
 
 class Tree():
     def __init__(self, max_depth, board):
-        self.root = Node(board, next_move=None, parent_node=None)
+        self.root = Node(board, None, None, 0, max_depth)
         self.max_depth = max_depth
         self.board = board
         self.construct_tree(self.root)
@@ -55,12 +137,8 @@ class Tree():
         #Add the layer if the max depth is not reached
         if self.get_depth(node) < self.max_depth:
             for i in node.board.legal_moves:
-                #For each legal move, create a new node with updated board
-                tempBoard = copy.copy(node.board)
-                tempBoard.push_uci(str(i))
-                #print(tempBoard)
-                newNode = Node(tempBoard, ChessMove.Value_Move(i), node)
-                del tempBoard
+                #For each legal move, create a new node
+                newNode = Node(node.board, i, node, self.get_depth(node)+1, self.max_depth)
                 node.children.add(newNode)
                 need_children.add(newNode)
                 
@@ -69,7 +147,7 @@ class Tree():
             while(iterator is not None):
                 self.construct_tree(iterator)
                 iterator = iterator.next_node
-
+        
     #Returns depth of a given node (distance from root)
     def get_depth(self, node):
         depth = 0

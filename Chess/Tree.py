@@ -44,8 +44,9 @@ class LinkedList():
         temp = self.head
         moves = list()
         moves.append(temp.next_move)
-        high = -100000
+        high = -1000000
         while temp is not None:
+            #If a node with higher value is found, clear list and save new node
             if(temp.val > high):
                 high = temp.val
                 moves.clear()
@@ -53,7 +54,6 @@ class LinkedList():
             elif(temp.val is high):
                 moves.append(temp.next_move)
             temp = temp.next_node
-        
         return moves
 
     #retuns list holding all moves in list tied at min value
@@ -61,8 +61,9 @@ class LinkedList():
         temp = self.head
         moves = list()
         moves.append(temp.next_move)
-        low = 100000
+        low = 1000000
         while temp is not None:
+            #If a node with lower value is found, clear list and save new node
             if(temp.val < low):
                 low = temp.val
                 moves.clear()
@@ -70,10 +71,9 @@ class LinkedList():
             elif(temp.val is low):
                 moves.append(temp.next_move)
             temp = temp.next_node
-
         return moves
 
-    #print all values stored in nodes in list 
+    #print all values stored in nodes in list (Used for testing)
     def print_list(self):
         
         temp = self.head
@@ -81,12 +81,11 @@ class LinkedList():
         while temp is not None:
             if temp.val > high:
                 high = temp.val
-            
             temp = temp.next_node
         print(high)
         
 class Node():
-    def __init__(self, board, next_move, parent_node, depth = None, max_depth = None, prev_node = None, next_node = None):
+    def __init__(self, board, next_move, parent_node = None, depth = None, max_depth = None, prev_node = None, next_node = None):
         
         self.board = board
         self.parent_node = parent_node
@@ -110,18 +109,8 @@ class Node():
             tempBoard = copy.copy(self.board)
             tempBoard.push_uci(str(self.next_move))
             self.board = tempBoard
-            '''
-            temp = self
-            outString = str(temp.next_move) + " " + str(val)
-            while temp.parent_node.parent_node is not None:
-                temp = temp.parent_node
-                outString += " " + str(temp.next_move) + " " + str(temp.val)
-            #loop back through and print move and val of everything above
-            if(val is not 0):
-                print(outString)
-            '''
-            return val
 
+            return val
 
 class Tree():
     def __init__(self, max_depth, board):
@@ -156,3 +145,5 @@ class Tree():
             temp = temp.parent_node
             depth += 1
         return depth
+
+    

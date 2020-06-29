@@ -47,10 +47,7 @@ class Value_Move(chess.Move):
         newBoard.push_uci(str(self))
         if(newBoard.is_checkmate()):
             val += 100000
-        elif(newBoard.is_game_over()):
-            #If result is stalemate and in winning possition, lose value
-            ####TODO : Calc winning
-            print()
+
         #Add points for castling to prioritize over another random move
         if(board.is_castling(self)):
             val += 0.5

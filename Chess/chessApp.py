@@ -1,6 +1,7 @@
 import chess
 import AIMoves as ai
 import ChessMove
+
 #File contains main logic and input/output for player
 
 #formats and outputs given move into output file
@@ -47,6 +48,7 @@ def player_move(board):
 def new_game():
     #create board and notation file
     board = chess.Board()
+    #NOTE : Change ai.algorithm_type to change which implementation is used
     computer_move = ai.min_max_move
     notationFile = open("notation.txt", "w+")
     notationFile.write("Wite\tBlack\n-------------\n")
@@ -80,14 +82,15 @@ def new_game():
         print("Insufficient Material")
     else:
         print("Game Over")
-
+    
 #Driver Code
 if __name__ == '__main__':
     new_game()
-    #Prompt for color
+    #Prompt to play again or quit
     choice = input("N for New Game, Q to Quit:")
-    while(choice is not "N" and choice is not "Q"):
-        choice = input("N for New Game, Q to Quit:")
+    while(choice is not "Q"):
+        while(choice is not "N" and choice is not "Q"):
+            choice = input("N for New Game, Q to Quit:")
         if(choice is "N"):
             new_game()
             choice = ""

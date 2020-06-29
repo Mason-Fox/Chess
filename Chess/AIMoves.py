@@ -10,12 +10,9 @@ import chess
 #returns san move of move added to the board
 def min_max_move(board):
 
-    import time
-    start = time.time()
-
     #create Tree of given depth of baord state and moves
     #NOTE: change tree depth to change how many moves are looked ahead
-    treeDepth = 4
+    treeDepth = 3
     moves_tree = Tree.Tree(treeDepth, board)
 
     #Decide whether to start bottom as max or min
@@ -27,16 +24,13 @@ def min_max_move(board):
     move = min_max(moves_tree.root, color, float('-inf'), float('inf'))
     sanMove = board.san(move)
     board.push_uci(str(move))
-    
-    end = time.time()
-    print(end - start)
 
     return sanMove
     
 #Recursivley updates each layer of tree by minimizing or maximizing the value of parent based on child nodes
-#tree = tree of moves/values being traversed
-#color = True/White or False/Black
-#depth = current depth to min/max values of nodes
+#node = current node to be evaluated
+#color = True/White/Max or False/Black/Min
+#alpha,beta = values used to determine pruning
 def min_max(node, color, alpha, beta):
     #If there are children nodes, get min/max from each child
     if(node.children.size is not 0):

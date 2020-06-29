@@ -67,7 +67,7 @@ def new_game():
     #Continue moves until game ends
     while not board.is_game_over():
         #Move player and computer and write to output file
-        write_notation(computer_move(board), notationFile, board)
+        write_notation(player_move(board), notationFile, board)
         print(board, "\n")
         if(not board.is_game_over()):
             write_notation(computer_move(board), notationFile, board)
